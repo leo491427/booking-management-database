@@ -94,12 +94,12 @@ async function loginUser(req, res) {
     const name = existingUser.name;
     const token = generateToken(existingUser._id);
 
-    res.usertoken = {name, email, token};
+    res.usertoken = {email, token};
 
-    console.log(res.usertoken);
+    console.log(res);
     // console.log(res.usertoken.token);
 
-    return res.json({name, email, token});
+    return res.json({email, token});
 }
 
 module.exports = {
