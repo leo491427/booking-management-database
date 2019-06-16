@@ -81,25 +81,19 @@ async function deleteUser(req, res, next) {
 async function loginUser(req, res) {
     const {email, password} = req.body;
     const existingUser = await User.findOne({email});
-
     if (!existingUser) {
         return res.status(401).json('Invalid user email');
     }
-
     const isValidPassword = await bcrypt.compareSync(password, existingUser.hashPassword);
     if (!isValidPassword) {
         return res.status(401).json('Invalid password');
     }
-
     const name = existingUser.name;
     const token = generateToken(existingUser._id);
-
-    res.usertoken = {email, token};
-
-    console.log(res);
-    // console.log(res.usertoken.token);
-
-    return res.json({email, token});
+    const userInfo = {name, email, token};
+    console.log(userInfo);
+    res.userInfo = userInfo;
+    return res.json(userInfo);
 }
 
 module.exports = {
