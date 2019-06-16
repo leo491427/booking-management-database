@@ -94,10 +94,9 @@ async function loginUser(req, res) {
     const name = existingUser.name;
     const token = generateToken(existingUser._id);
 
-    res.data = {};
-    res.data.usertoken = {name, email, token};
+    res.usertoken = {name, email, token};
 
-    console.log(res.data);
+    console.log(res.usertoken);
     // console.log(res.usertoken.token);
 
     return res.json({name, email, token});
