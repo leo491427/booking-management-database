@@ -2,7 +2,7 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/users');
 const {generateToken} = require('../utils/jwt');
-const errorHandler = require('../middleware/errorHandler');
+
 
 async function getAllUsers (req, res) {
     const allUsers = await User.find().exec();
@@ -22,15 +22,16 @@ async function getUserById (req, res) {
 }
 
 async function addUser (req, res) {
-    const {name, password} = req.body;
+    const {name, email, password} = req.body;
 
-    const existingUser = await User.findOne({name});
+    const existingUser = await User.findOne({email});
     if (existingUser) {
-        return res.status(400).json('user has already existed');
+        return res.status(400).json('user email has already existed');
     }
     const hashPassword = bcrypt.hashSync(password, 10);
     const user = new User({
         name,
+        email,
         hashPassword
     });
     if (!user) {
@@ -40,20 +41,20 @@ async function addUser (req, res) {
 
     const token = generateToken(user._id);
 
-    return res.json({name, token});
+    return res.json({name, email, token});
 }
 
 async function updateUser(req, res) {
     const {id} = req.params;
-    const {name, password} = req.body;
+    const {name, email, password} = req.body;
 
     const existingUser = await User.findById(id);
-    if (name !== existingUser.name) {
-        return res.status(400).json('username cannot be changed');
+    if (email !== existingUser.email) {
+        return res.status(400).json('user email cannot be changed');
     }
 
     const hashPassword = bcrypt.hashSync(password, 10);
-    const updatedUser = await User.findByIdAndUpdate(id, {name, hashPassword}, {new: true});
+    const updatedUser = await User.findByIdAndUpdate(id, {name, email, hashPassword}, {runValidators: true, new: true});
     if (!updatedUser) {
         return res.status(404).json('updating user failed');
     }
@@ -78,10 +79,11 @@ async function deleteUser(req, res, next) {
 }
 
 async function loginUser(req, res) {
-    const {name, password} = req.body;
-    const existingUser = await User.findOne({name});
+    const {email, password} = req.body;
+    const existingUser = await User.findOne({email});
+
     if (!existingUser) {
-        return res.status(401).json('Invalid username');
+        return res.status(401).json('Invalid user email');
     }
 
     const isValidPassword = await bcrypt.compareSync(password, existingUser.hashPassword);
@@ -89,15 +91,16 @@ async function loginUser(req, res) {
         return res.status(401).json('Invalid password');
     }
 
+    const name = existingUser.name;
     const token = generateToken(existingUser._id);
 
     res.data = {};
-    res.data.usertoken = {name, token};
+    res.data.usertoken = {name, email, token};
 
     console.log(res.data);
     // console.log(res.usertoken.token);
 
-    return res.json({name, token});
+    return res.json({name, email, token});
 }
 
 module.exports = {

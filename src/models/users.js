@@ -1,9 +1,18 @@
 const mongoose = require('mongoose');
+const joi = require('@hapi/joi');
 
 const schema = new mongoose.Schema({
     name: {
         type: String,
         required: true
+    },
+    email: {
+        type: String,
+        required: true,
+        validate: {
+            validator: email => !joi.validate(email, joi.string().email()).error,
+            msg: 'Invalid email format'
+        }
     },
     hashPassword: {
         type: String,

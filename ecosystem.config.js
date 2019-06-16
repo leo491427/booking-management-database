@@ -2,8 +2,7 @@ module.exports = {
     apps: [
       {
         name: 'booking-management-database',
-        script: './src/index.js',
-        instances: 'max'
+        script: './src/index.js'
       }
     ]
   };
