@@ -91,10 +91,10 @@ async function loginUser(req, res) {
     const name = existingUser.name;
     const token = generateToken(existingUser._id);
     const userInfo = {name, email, token};
-    res.userInfo = {};
-    res.userInfo = userInfo;
-    res.send(userInfo);
-    return res.json(userInfo);
+    //res.body.userInfo = userInfo;
+    const data = {};
+    data.userInfo = userInfo;
+    return res.json(data);
 }
 
 module.exports = {
