@@ -2,9 +2,18 @@ const Business = require('../models/businesses');
 const Category = require('../models/categories');
 
 async function getAllBusinesses(req, res) {
-    const businesses = await Business.find().exec();
-    if (!businesses) {
+    // const businesses = await Business.find().exec();
+    // if (!businesses) {
+    //     return res.status(404).json('businesses are not found');
+    // }
+
+    const {conditionKey = 'email', conditionValue, pageRequested = 1, pageSize = 5, sortKey = 'email', sortValue = 1} = req.body;
+    const businesses = await Business.searchByFilters(conditionKey, conditionValue, pageRequested, pageSize, sortKey, sortValue);
+    if (!businesses || businesses.length === 0) {
         return res.status(404).json('businesses are not found');
+    }
+    if (typeof(businesses) === 'string') {
+        return res.status(500).json(businesses);
     }
     return res.json(businesses);
 }

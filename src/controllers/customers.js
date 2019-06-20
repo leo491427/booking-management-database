@@ -2,15 +2,25 @@ const Customer = require('../models/customers');
 const Order = require('../models/orders');
 
 async function getAllCustomers(req, res) {
-    const numCustomers = await Customer.estimatedDocumentCount();
-    const {condition = null, skipNum = 0, pageSize = null, sortMethod = null, selectMethod = null} = req.body;
-    const customers = await Customer.find(condition).skip(skipNum).limit(pageSize).sort(sortMethod). select(selectMethod).exec();
-    // const customers = await Customer.find().exec();
-    if (!customers) {
+    // const numCustomers = await Customer.estimatedDocumentCount();
+    // const {condition = null, skipNum = 0, pageSize = null, sortMethod = null, selectMethod = null} = req.body;
+    // const customers = await Customer.find(condition).skip(skipNum).limit(pageSize).sort(sortMethod). select(selectMethod).exec();
+    // // const customers = await Customer.find().exec();
+    // if (!customers) {
+    //     return res.status(404).json('customers are not found');
+    // }
+    // //console.log(numCustomers);
+    // return res.json({numCustomers, customers});
+    
+    const {conditionKey = 'email', conditionValue, pageRequested = 1, pageSize = 5, sortKey = 'email', sortValue = 1} = req.body;
+    const customers = await Customer.searchByFilters(conditionKey, conditionValue, pageRequested, pageSize, sortKey, sortValue);
+    if (!customers || customers.length === 0) {
         return res.status(404).json('customers are not found');
     }
-    //console.log(numCustomers);
-    return res.json({numCustomers, customers});
+    if (typeof(customers) === 'string') {
+        return res.status(500).json(customers);
+    }
+    return res.json(customers);
 }
 
 async function getCustomerById(req, res) {

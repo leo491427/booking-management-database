@@ -4,11 +4,16 @@ const Business = require('../models/businesses');
 const Category = require('../models/categories');
 
 async function getAllOrders(req, res) {
-    const allOrders = await Order.find().exec();
-    if (!allOrders) {
+
+    const {conditionKey, conditionValue, pageRequested = 1, pageSize = 5, sortKey = 'createdAt', sortValue = 1} = req.body;
+    const orders = await Order.searchByFilters(conditionKey, conditionValue, pageRequested, pageSize, sortKey, sortValue);
+    if (!orders || orders.length === 0) {
         return res.status(404).json('orders are not found');
     }
-    return res.json(allOrders);
+    if (typeof(orders) === 'string') {
+        return res.status(500).json(orders);
+    }
+    return res.json(orders);   
 }
 
 // populate business data

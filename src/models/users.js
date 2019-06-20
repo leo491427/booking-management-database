@@ -4,11 +4,13 @@ const joi = require('@hapi/joi');
 const schema = new mongoose.Schema({
     name: {
         type: String,
-        required: true
+        required: true,
+        lowercase: true
     },
     email: {
         type: String,
         required: true,
+        lowercase: true,
         validate: {
             validator: email => !joi.validate(email, joi.string().email()).error,
             msg: 'Invalid email format'

@@ -2,11 +2,21 @@ const Category = require('../models/categories');
 const Business = require('../models/businesses');
 
 async function getAllCategories(req, res) {
-    const allCategories = await Category.find().exec();
-    if (!allCategories) {
+    // const allCategories = await Category.find().exec();
+    // if (!allCategories) {
+    //     return res.status(404).json('categories are not found');
+    // }
+    // return res.json(allCategories);
+
+    const {conditionKey = 'name', conditionValue, pageRequested = 1, pageSize = 5, sortKey = 'name', sortValue = 1} = req.body;
+    const categories = await Category.searchByFilters(conditionKey, conditionValue, pageRequested, pageSize, sortKey, sortValue);
+    if (!categories || categories.length === 0) {
         return res.status(404).json('categories are not found');
     }
-    return res.json(allCategories);
+    if (typeof(categories) === 'string') {
+        return res.status(500).json(categories);
+    }
+    return res.json(categories);
 }
 
 // populate business data
