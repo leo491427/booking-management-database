@@ -8,8 +8,19 @@ const schema = new mongoose.Schema({
     description: {
         type:String,       
         default:''
-    }
-
+    },
+    businesses: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Business',
+        }
+    ],
+    orders: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Order',
+        }
+    ] 
 },
 {
     timestamps: true,

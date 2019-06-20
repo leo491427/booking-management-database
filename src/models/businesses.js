@@ -40,6 +40,18 @@ const schema = new mongoose.Schema({
     rate: {
         type:Number,        
     },
+    categories: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Category',
+        }
+    ],
+    orders: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Order',
+        }
+    ]
 },
 {
     timestamps: true,

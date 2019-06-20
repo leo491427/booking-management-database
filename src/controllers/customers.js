@@ -1,4 +1,5 @@
 const Customer = require('../models/customers');
+const Order = require('../models/orders');
 
 async function getAllCustomers(req, res) {
     const numCustomers = await Customer.estimatedDocumentCount();
@@ -8,7 +9,7 @@ async function getAllCustomers(req, res) {
     if (!customers) {
         return res.status(404).json('customers are not found');
     }
-    console.log(numCustomers);
+    //console.log(numCustomers);
     return res.json({numCustomers, customers});
 }
 
@@ -43,7 +44,9 @@ async function addCustomer(req, res) {
 async function updateCustomer(req, res) {
     const {id} = req.params;
     const {customerName, preferName, email, phone} = req.body;
-    const updatedCustomer = await Customer.findByIdAndUpdate(id, {customerName, preferName, email, phone}, {runValidators: true, new: true});
+    const updatedCustomer = await Customer.findByIdAndUpdate(id,
+        {customerName, preferName, email, phone},
+        {runValidators: true, new: true});
     if (!updatedCustomer) {
         return res.status(404).json('updating customer failed');
     }

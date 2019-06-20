@@ -4,7 +4,9 @@ const {
     getCategoryById,
     addCategory,
     updateCategory,
-    deleteCategoryById
+    deleteCategoryById,
+    addBusinesstoCategory,
+    deleteBusinessFromCategory
 } = require('../controllers/categories');
 
 const router = express.Router();
@@ -18,5 +20,9 @@ router.post('/', addCategory);
 router.put('/:id', updateCategory);
 
 router.delete('/:id', deleteCategoryById);
+
+router.post('/:categoryId/businesses/:businessId', addBusinesstoCategory);
+
+router.delete('/:categoryId/businesses/:businessId', deleteBusinessFromCategory);
 
 module.exports = router;

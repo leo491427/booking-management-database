@@ -1,6 +1,22 @@
 const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema({
+    customerEmail: 
+        {
+        type: String,
+        ref: 'Customer',
+        required: true,
+        },
+    businessEmail: {
+        type: String,
+        ref: 'Business',
+
+    },
+    categoryName: {
+        type: String,
+        ref: 'Category',
+        required: true,
+    },
     status: {
         type:String,
         required:true,
@@ -16,10 +32,10 @@ const schema = new mongoose.Schema({
     jobLocation: {
         type:String,
         default:'',
+        required: true,
     },
     rate: {
-        type:Number,
-        required:true,      
+        type:Number,      
         enum:[0, 1, 2, 3, 4, 5],
         default:5,
         validate: (rate) => {

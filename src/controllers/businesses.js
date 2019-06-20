@@ -1,4 +1,5 @@
 const Business = require('../models/businesses');
+const Category = require('../models/categories');
 
 async function getAllBusinesses(req, res) {
     const businesses = await Business.find().exec();
@@ -10,7 +11,9 @@ async function getAllBusinesses(req, res) {
 
 async function getBusinessById(req, res) {
     const {id} = req.params;
-    const business = await Business.findById(id);
+    const business = await Business.findById(id)
+        .populate('categories','name')
+        .populate('orders', '_id, status');
     if (!business) {
         return res.status(404).json('business is not found');
     }
@@ -56,13 +59,50 @@ async function deleteBusinessById(req, res) {
     if (!deletedBusiness) {
         return res.status(404).json('deleting business failed');
     }
+
+    await Category.updateMany(
+        {_id: {$in: deletedBusiness.categories}},
+        {$pull: {businesses: deletedBusiness._id}}
+    );
     return res.json(deletedBusiness); 
 }
+
+async function addCategorytoBusiness(req, res) {
+    const {businessId, categoryId} = req.params;
+    const existingBusiness = await Business.findById(businessId);
+    const existingCategory = await Category.findById(categoryId);
+    if (!existingBusiness || !existingCategory) {   
+        return res.status(404).json('Business or category is not found');
+    }
+    existingBusiness.categories.addToSet(existingCategory._id);
+    await existingBusiness.save();
+    existingCategory.businesses.addToSet(existingBusiness._id);
+    await existingCategory.save();
+
+    return res.json(existingBusiness);
+}
+
+async function deleteCategoryFromBusiness(req, res) {
+    const {businessId, categoryId} = req.params;
+    const existingBusiness = await Business.findById(businessId);
+    const existingCategory = await Category.findById(categoryId);
+    if (!existingBusiness || !existingCategory) {   
+        return res.status(404).json('Business or category is not found');
+    }
+    existingBusiness.categories.pull(existingCategory._id);
+    await existingBusiness.save();
+    existingCategory.businesses.pull(existingBusiness._id);
+    await existingCategory.save();
+
+    return res.json(existingBusiness);
+} 
 
 module.exports = {
     getAllBusinesses,
     getBusinessById,
     addBusiness,
     updateBusiness,
-    deleteBusinessById
+    deleteBusinessById,
+    addCategorytoBusiness,
+    deleteCategoryFromBusiness,
 };

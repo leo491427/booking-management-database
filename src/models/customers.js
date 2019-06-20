@@ -20,8 +20,14 @@ const schema = new mongoose.Schema({
     },
     phone:{
         type:Number,
-        required:true
-    }    
+        required:true,
+    },
+    orders: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Order',
+        }
+    ]    
 },
 {
     timestamps: true,
