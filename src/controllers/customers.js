@@ -13,14 +13,17 @@ async function getAllCustomers(req, res) {
     // return res.json({numCustomers, customers});
     
     const {conditionKey = 'email', conditionValue, pageRequested = 1, pageSize = 5, sortKey = 'email', sortValue = 1} = req.body;
-    const customers = await Customer.searchByFilters(conditionKey, conditionValue, pageRequested, pageSize, sortKey, sortValue);
-    if (!customers || customers.length === 0) {
-        return res.status(404).json('customers are not found');
+    
+    const documentCountBeforePagination = await Customer.countDocuments({[conditionKey]: new RegExp(conditionValue, 'i')});
+    
+    const documentsAfterPagination = await Customer.searchByFilters(conditionKey, conditionValue, pageRequested, pageSize, sortKey, sortValue);
+    if (!documentsAfterPagination || documentsAfterPagination.length === 0) {
+        return res.status(404).json('Customers are not found');
     }
-    if (typeof(customers) === 'string') {
-        return res.status(500).json(customers);
+    if (typeof(documentsAfterPagination) === 'string') {
+        return res.status(500).json(documentsAfterPagination);
     }
-    return res.json(customers);
+    return res.json({documentCountBeforePagination, documentsAfterPagination});
 }
 
 async function getCustomerById(req, res) {

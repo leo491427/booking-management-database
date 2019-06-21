@@ -72,10 +72,13 @@ schema.statics.searchByFilters = async function (conditionKey, conditionValue, p
     }
     let data;
     if (!conditionKey) {
-        data = this.find(); //此处不可以加await，加了await得到数组而不是Query对象，无法执行后面的.limit .sort等
-    } else {  //此处不可以加await，加了await得到数组而不是Query对象，无法执行后面的.limit .sort等
-        data = this.find({[conditionKey]: new RegExp(conditionValue, 'i')});
+        //此处不可以加await，加了await得到数组而不是Query对象，无法执行后面的.limit .sort等   
+        data = this.find(); 
+    } else {  
+        //此处不可以加await，加了await得到数组而不是Query对象，无法执行后面的.limit .sort等
+        data = this.find({[conditionKey]: new RegExp(conditionValue, 'i')});       
     }
+    // 为何以下无论是否有await，data在return前都是query？
     data.skip((parseInt(pageRequested)-1)*parseInt(pageSize))
         .limit(parseInt(pageSize))
         .sort({[sortKey]: parseInt(sortValue)})

@@ -4,16 +4,24 @@ const Business = require('../models/businesses');
 const Category = require('../models/categories');
 
 async function getAllOrders(req, res) {
-
     const {conditionKey, conditionValue, pageRequested = 1, pageSize = 5, sortKey = 'createdAt', sortValue = 1} = req.body;
-    const orders = await Order.searchByFilters(conditionKey, conditionValue, pageRequested, pageSize, sortKey, sortValue);
-    if (!orders || orders.length === 0) {
-        return res.status(404).json('orders are not found');
+    
+    let documentCountBeforePagination;
+    if (!conditionKey) {
+        documentCountBeforePagination = await Order.countDocuments();
+    } else {  
+        documentCountBeforePagination = await Order.countDocuments({[conditionKey]: new RegExp(conditionValue, 'i')});
     }
-    if (typeof(orders) === 'string') {
-        return res.status(500).json(orders);
+    console.log(documentCountBeforePagination);
+    
+    const documentsAfterPagination = await Order.searchByFilters(conditionKey, conditionValue, pageRequested, pageSize, sortKey, sortValue);
+    if (!documentsAfterPagination || documentsAfterPagination.length === 0) {
+        return res.status(404).json('Orders are not found');
     }
-    return res.json(orders);   
+    if (typeof(documentsAfterPagination) === 'string') {
+        return res.status(500).json(documentsAfterPagination);
+    }
+    return res.json({documentCountBeforePagination, documentsAfterPagination});   
 }
 
 // populate business data

@@ -9,14 +9,17 @@ async function getAllCategories(req, res) {
     // return res.json(allCategories);
 
     const {conditionKey = 'name', conditionValue, pageRequested = 1, pageSize = 5, sortKey = 'name', sortValue = 1} = req.body;
-    const categories = await Category.searchByFilters(conditionKey, conditionValue, pageRequested, pageSize, sortKey, sortValue);
-    if (!categories || categories.length === 0) {
-        return res.status(404).json('categories are not found');
+    
+    const documentCountBeforePagination = await Category.countDocuments({[conditionKey]: new RegExp(conditionValue, 'i')});
+
+    const documentsAfterPagination = await Category.searchByFilters(conditionKey, conditionValue, pageRequested, pageSize, sortKey, sortValue);
+    if (!documentsAfterPagination || documentsAfterPagination.length === 0) {
+        return res.status(404).json('Categories are not found');
     }
-    if (typeof(categories) === 'string') {
-        return res.status(500).json(categories);
+    if (typeof(documentsAfterPagination) === 'string') {
+        return res.status(500).json(documentsAfterPagination);
     }
-    return res.json(categories);
+    return res.json({documentCountBeforePagination, documentsAfterPagination});
 }
 
 // populate business data
