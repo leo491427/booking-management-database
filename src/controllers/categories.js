@@ -8,7 +8,7 @@ async function getAllCategories(req, res) {
     // }
     // return res.json(allCategories);
 
-    const {conditionKey = 'name', conditionValue, pageRequested = 1, pageSize = 5, sortKey = 'name', sortValue = 1} = req.body;
+    const {conditionKey = 'name', conditionValue, pageRequested = 1, pageSize = 5, sortKey = 'name', sortValue = 1} = req.query;
     
     const documentCountBeforePagination = await Category.countDocuments({[conditionKey]: new RegExp(conditionValue, 'i')});
 

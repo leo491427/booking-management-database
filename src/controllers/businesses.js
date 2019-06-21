@@ -7,7 +7,7 @@ async function getAllBusinesses(req, res) {
     //     return res.status(404).json('businesses are not found');
     // }
 
-    const {conditionKey = 'email', conditionValue, pageRequested = 1, pageSize = 5, sortKey = 'email', sortValue = 1} = req.body;
+    const {conditionKey = 'email', conditionValue, pageRequested = 1, pageSize = 5, sortKey = 'email', sortValue = 1} = req.query;
     
     const documentCountBeforePagination = await Business.countDocuments({[conditionKey]: new RegExp(conditionValue, 'i')});
 

@@ -4,7 +4,7 @@ const Business = require('../models/businesses');
 const Category = require('../models/categories');
 
 async function getAllOrders(req, res) {
-    const {conditionKey, conditionValue, pageRequested = 1, pageSize = 5, sortKey = 'createdAt', sortValue = 1} = req.body;
+    const {conditionKey, conditionValue, pageRequested = 1, pageSize = 5, sortKey = 'createdAt', sortValue = 1} = req.query;
     
     let documentCountBeforePagination;
     if (!conditionKey) {

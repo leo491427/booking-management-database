@@ -12,7 +12,7 @@ async function getAllCustomers(req, res) {
     // //console.log(numCustomers);
     // return res.json({numCustomers, customers});
     
-    const {conditionKey = 'email', conditionValue, pageRequested = 1, pageSize = 5, sortKey = 'email', sortValue = 1} = req.body;
+    const {conditionKey = 'email', conditionValue, pageRequested = 1, pageSize = 5, sortKey = 'email', sortValue = 1} = req.query;
     
     const documentCountBeforePagination = await Customer.countDocuments({[conditionKey]: new RegExp(conditionValue, 'i')});
     
